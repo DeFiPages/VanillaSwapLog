@@ -10,7 +10,7 @@ module.exports = {
   output: {
     filename: 'bundle.js',
     path: path.resolve(__dirname, 'dist'),
-    publicPath: isProduction ? '/dfitaxhistory/' : '/',
+    publicPath: isProduction ? '/vanillaswaplog/' : '/',
   },
   resolve: {
     extensions: ['.ts', '.js'],
