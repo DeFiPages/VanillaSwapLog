@@ -1,7 +1,7 @@
 /// <reference path="kendo.all.d.ts" />
 import { fetchLogs, logItemSchema, logColumns, logTooltip } from './fetchlog';
 
-import {formatPairs} from './vannillapairs'
+import { formatPairs } from './vannillapairs'
 
 var grid: kendo.ui.Grid;
 var logData: any;
@@ -13,13 +13,15 @@ function GetLocalStorage(key: string, defaulValue: any) {
 
 
 async function init() {
-  const comboBoxTemplate = `<input id="myComboBox" style="width: 200px;" />`;
+  const comboBoxTemplate = `<input id="myComboBox" style="width: 250px;" />`;
+  var numericTextBoxTemplate = `<input id='blockNumberInput' style='width: 95px;' title='Number of blocks to load' />`;
   const columnWidths = GetLocalStorage("vanillaswaplog.colWidths", []);
   grid = $("#grid").kendoGrid({
     toolbar: [
       { template: "<button id='btnLoad'>Load</button>" },
+      { template: numericTextBoxTemplate },
       { template: comboBoxTemplate },
-      "excel",
+      { name: 'excel', text: '' },
       { template: '<label id="contractLabel">Contract:</label>' },
     ],
     dataSource: {
@@ -54,7 +56,8 @@ async function init() {
         return;
       }
       $("#contractLabel").text("Contract: " + contractAddress);
-      logData = await fetchLogs(contractAddress);
+      var numBlocks = $("#blockNumberInput")!.data("kendoNumericTextBox")!.value();
+      logData = await fetchLogs(contractAddress, numBlocks);
       if (typeof logData === "string") {
         alert(logData);
       } else {
@@ -71,13 +74,20 @@ async function init() {
     filter: "contains",
     suggest: true,
     index: -1,
-    placeholder: "Select item...",
+    placeholder: "Select contract...",
     change: (e) => {
       var comboBox = e.sender;
       var selectedValue = comboBox.value();
       console.log("Selected address: " + selectedValue);
     }
   });
+
+  $("#blockNumberInput").kendoNumericTextBox({
+    format: "#",
+    step: 5000,  
+    min: 5000,
+    value: 10000,
+});
 
 }
 

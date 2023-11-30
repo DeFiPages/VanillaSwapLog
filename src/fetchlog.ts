@@ -62,7 +62,7 @@ interface Log {
   readonly topics?: ByteTypes[ReturnFormat["bytes"]][];
 }
 
-export async function fetchLogs(contractAddress: string): Promise<logItem[]> {
+export async function fetchLogs(contractAddress: string, numBlocks: number): Promise<logItem[]> {
   const logItems: logItem[] = [];
   try {
     const providerUrl = "https://dmc.mydefichain.com/mainnet";
@@ -76,7 +76,8 @@ export async function fetchLogs(contractAddress: string): Promise<logItem[]> {
     }
     console.log("Connected to DMC RPC");
 
-    const fromBlock: number = 0;
+    const latestBlock = Number(await web3.eth.getBlockNumber());
+    const fromBlock: number = Math.max(latestBlock - numBlocks, 0);
    
     const filterParams = {
       address: contractAddress,
@@ -84,8 +85,7 @@ export async function fetchLogs(contractAddress: string): Promise<logItem[]> {
       toBlock: 'latest' as BlockNumberOrTag,
       topics: [
         "0xd78ad95fa46c994b6551d0da85fc275fe613ce37657fb8d5e3d130840159d822",
-        "0x000000000000000000000000e99ca567fb57936ef91c472cbe80f35867fd7323",
-        "0x000000000000000000000000e99ca567fb57936ef91c472cbe80f35867fd7323",
+        // ignore  address indexed sender and  address indexed to
       ]
     };
 
